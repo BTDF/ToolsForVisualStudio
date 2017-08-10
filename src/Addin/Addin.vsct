@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Deployment Framework for BizTalk Tools for Visual Studio
+   Copyright (C) 2008-Present Thomas F. Abraham. All Rights Reserved.
+   Licensed under the MIT License. See License.txt in the project root.
+-->
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!--
+    Defines the layout and type of the commands, divided into different sections. The VSCT compiler that translates into Visual Studio's binary
+    format can run a preprocessor on the file; the preprocessor is (usually) the C++ preproc, so it's possible to define includes and macros with
+    the same syntax used in C++ files. Using this ability, we include some files defining some constants we will use inside the file. -->
+
+  <!-- Defines the IDs for all the commands exposed by VisualStudio. -->
+  <Extern href="stdidcmd.h" />
+  <!-- Defines the command ids for the menus provided by the shell. -->
+  <Extern href="vsshlids.h" />
+
+  <!--
+    Commands: defines commands, menus and groups. Uses a Guid to identify the package that provides the command defined inside it.
+    We have sub-sections for the menus, groups, buttons (the actual commands), combos and bitmaps.  Each element is identified
+    by a command id that is a unique pair of guid and numeric id; the guid part is called "command set" and is used to group commands
+    inside a logically related group; your package should define its own command set to avoid collisions with ids defined by other packages. -->
+  <Commands package="guidAddinPkg">
+    <Menus>
+      <Menu guid="guidAddinCmdSet" id="ToolsMenu" priority="0x0000" type="Menu">
+        <Parent guid="guidAddinCmdSet" id="ToolsMenuGroup" />
+        <Strings>
+          <ButtonText>Deployment Framework for BizTalk</ButtonText>
+          <CommandName>Deployment Framework for BizTalk</CommandName>
+        </Strings>
+      </Menu>
+      <Menu guid="guidAddinCmdSet" id="Toolbar" type="Toolbar">
+        <Strings>
+          <ButtonText>Deployment Framework for BizTalk</ButtonText>
+          <CommandName>Deployment Framework for BizTalk</CommandName>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <!--
+      Groups. A group is a container for other menus or buttons (commands); from a visual point of view,
+      you can see the group as the part of a menu contained between two lines. The parent of a group must be a menu. -->
+    <Groups>
+      <Group guid="guidAddinCmdSet" id="ToolsMenuGroup" priority="0x0000">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
+      </Group>
+      <Group guid="guidAddinCmdSet" id="BTDFMenuGroup1" priority="0x0100">
+        <Parent guid="guidAddinCmdSet" id="ToolsMenu" />
+      </Group>
+      <Group guid="guidAddinCmdSet" id="BTDFMenuGroup2" priority="0x0200">
+        <Parent guid="guidAddinCmdSet" id="ToolsMenu" />
+      </Group>
+      <Group guid="guidAddinCmdSet" id="BTDFMenuGroup3" priority="0x0300">
+        <Parent guid="guidAddinCmdSet" id="ToolsMenu" />
+      </Group>
+      <Group guid="guidAddinCmdSet" id="BTDFMenuGroup4" priority="0x0400">
+        <Parent guid="guidAddinCmdSet" id="ToolsMenu" />
+      </Group>
+      <Group guid="guidAddinCmdSet" id="ToolbarGroup1" priority="0x0000">
+        <Parent guid="guidAddinCmdSet" id="Toolbar" />
+      </Group>
+      <Group guid="guidAddinCmdSet" id="ToolbarGroup2" priority="0x0100">
+        <Parent guid="guidAddinCmdSet" id="Toolbar" />
+      </Group>
+      <Group guid="guidAddinCmdSet" id="ToolbarGroup3" priority="0x0200">
+        <Parent guid="guidAddinCmdSet" id="Toolbar" />
+      </Group>
+      <Group guid="guidAddinCmdSet" id="ToolbarGroup4" priority="0x0300">
+        <Parent guid="guidAddinCmdSet" id="Toolbar" />
+      </Group>
+    </Groups>
+
+    <!--
+      Buttons. Defines the elements the user can interact with, like a menu command or a button or combo box in a toolbar.
+      To define a button you specify its ID, the parent menu and its display priority. The command is visible and enabled by default.
+      If you need to change the visibility, status, etc, you can use the CommandFlag node. You can add more than one CommandFlag node
+      e.g.: <CommandFlag>DefaultDisabled</CommandFlag> <CommandFlag>DynamicVisibility</CommandFlag>
+      If you do not want an image next to your command, remove the Icon node or set it to <Icon guid="guidOfficeIcon" id="msotcidNoIcon" /> -->
+    <Buttons>
+      <Button guid="guidAddinCmdSet" id="cmdidDeploy" priority="0x0100" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup1" />
+        <Icon guid="guidImages" id="bmpDeploy" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Deploy BizTalk Solution</CommandName>
+          <ButtonText>Deploy BizTalk Solution</ButtonText>
+          <ToolTipText>Deploys the BizTalk solution</ToolTipText>
+        </Strings>
+      </Button>
+      <Button guid="guidAddinCmdSet" id="cmdidUndeploy" priority="0x0110" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup1" />
+        <Icon guid="guidImages" id="bmpUndeploy" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Undeploy BizTalk Solution</CommandName>
+          <ButtonText>Undeploy BizTalk Solution</ButtonText>
+          <ToolTipText>Undeploys the BizTalk solution</ToolTipText>
+        </Strings>
+      </Button>
+      <Button guid="guidAddinCmdSet" id="cmdidQuickDeploy" priority="0x0120" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup1" />
+        <Icon guid="guidImages" id="bmpQuickDeploy" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Quick Deploy BizTalk Solution</CommandName>
+          <ButtonText>Quick Deploy BizTalk Solution</ButtonText>
+          <ToolTipText>Quickly updates orchestrations, components, transforms and SSO without a full deployment</ToolTipText>
+        </Strings>
+      </Button>
+      <Button guid="guidAddinCmdSet" id="cmdidBuildMsi" priority="0x0130" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup1" />
+        <Icon guid="guidImages" id="bmpBuildMsi" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Build Server Deploy MSI</CommandName>
+          <ButtonText>Build Server Deploy MSI</ButtonText>
+          <ToolTipText>Creates an MSI file for server deployment</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidAddinCmdSet" id="cmdidDeployRules" priority="0x0100" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup2" />
+        <Icon guid="guidImages" id="bmpDeployRules" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Deploy Rules and Vocabularies</CommandName>
+          <ButtonText>Deploy Rules and Vocabularies</ButtonText>
+          <ToolTipText>Deploys BizTalk Rules Engine vocabularies and rules</ToolTipText>
+        </Strings>
+      </Button>
+      <Button guid="guidAddinCmdSet" id="cmdidUndeployRules" priority="0x0110" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup2" />
+        <Icon guid="guidImages" id="bmpUndeployRules" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Undeploy Rules and Vocabularies</CommandName>
+          <ButtonText>Undeploy Rules and Vocabularies</ButtonText>
+          <ToolTipText>Undeploys BizTalk Rules Engine vocabularies and rules</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidAddinCmdSet" id="cmdidBounce" priority="0x0100" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup3" />
+        <Icon guid="guidImages" id="bmpBounce" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Bounce BizTalk</CommandName>
+          <ButtonText>Bounce BizTalk</ButtonText>
+          <ToolTipText>Restarts BizTalk hosts and IIS (if enabled)</ToolTipText>
+        </Strings>
+      </Button>
+      <Button guid="guidAddinCmdSet" id="cmdidTerminateInstances" priority="0x0110" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup3" />
+        <Icon guid="guidImages" id="bmpTerminateInstances" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Terminate All Service Instances</CommandName>
+          <ButtonText>Terminate All Service Instances</ButtonText>
+          <ToolTipText>Terminates all running or suspended service instances associated with the BizTalk application</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidAddinCmdSet" id="cmdidExportSettings" priority="0x0100" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup4" />
+        <Icon guid="guidImages" id="bmpExportSettings" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Export Environment Settings</CommandName>
+          <ButtonText>Export Environment Settings</ButtonText>
+          <ToolTipText>Exports settings from the spreadsheet to per-environment XML files</ToolTipText>
+        </Strings>
+      </Button>
+      <Button guid="guidAddinCmdSet" id="cmdidUpdateSso" priority="0x0110" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup4" />
+        <Icon guid="guidImages" id="bmpUpdateSso" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Update SSO from Settings Spreadsheet</CommandName>
+          <ButtonText>Update SSO from Settings Spreadsheet</ButtonText>
+          <ToolTipText>Updates SSO with the current settings from the settings spreadsheet</ToolTipText>
+        </Strings>
+      </Button>
+      <Button guid="guidAddinCmdSet" id="cmdidGacProjectOutput" priority="0x0120" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup4" />
+        <Icon guid="guidImages" id="bmpGacProjectOutput" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>GAC Output of Selected Project</CommandName>
+          <ButtonText>GAC Output of Selected Project</ButtonText>
+          <ToolTipText>Adds the binary output of the currently selected project to the GAC</ToolTipText>
+        </Strings>
+      </Button>
+      <Button guid="guidAddinCmdSet" id="cmdidImportBindings" priority="0x0130" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup4" />
+        <Icon guid="guidImages" id="bmpImportBindings" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Import BizTalk Bindings</CommandName>
+          <ButtonText>Import BizTalk Bindings</ButtonText>
+          <ToolTipText>Imports bindings from the PortBindings.xml file into the BizTalk application</ToolTipText>
+        </Strings>
+      </Button>
+      <Button guid="guidAddinCmdSet" id="cmdidPreprocessBindings" priority="0x0140" type="Button">
+        <Parent guid="guidAddinCmdSet" id="BTDFMenuGroup4" />
+        <Icon guid="guidImages" id="bmpPreprocessBindings" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>Preprocess BizTalk Bindings</CommandName>
+          <ButtonText>Preprocess BizTalk Bindings</ButtonText>
+          <ToolTipText>Pre-processes bindings to create PortBindings.xml from MasterPortBindings.xml</ToolTipText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <!--
+      Bitmaps: defines bitmaps that are used for commands.
+      The bitmap is defined a little bit different from the others: the declaration starts with a guid for the bitmap strip, then
+      the resource id of the bitmap strip containing the bitmaps, then the numeric ids of the elements used inside the button definition.
+      An important aspect of this declaration is that the element id must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\Toolbar.png" />
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <!-- This is the package guid. -->
+    <GuidSymbol name="guidAddinPkg" value="{85a16b5e-be96-48ee-b32c-ef07df88501f}" />
+
+    <!-- This is the guid used to group the menu commands together -->
+    <GuidSymbol name="guidAddinCmdSet" value="{1e87aacf-06e4-496f-9e6a-f39f47bf43eb}">
+      <IDSymbol name="ToolsMenuGroup" value="0x0300" />
+      <IDSymbol name="BTDFMenuGroup1" value="0x0310" />
+      <IDSymbol name="BTDFMenuGroup2" value="0x0330" />
+      <IDSymbol name="BTDFMenuGroup3" value="0x0340" />
+      <IDSymbol name="BTDFMenuGroup4" value="0x0350" />
+
+      <IDSymbol name="ToolsMenu" value="0x0200" />
+
+      <IDSymbol name="Toolbar" value="0x0400" />
+      <IDSymbol name="ToolbarGroup1" value="0x0410" />
+      <IDSymbol name="ToolbarGroup2" value="0x0420" />
+      <IDSymbol name="ToolbarGroup3" value="0x0430" />
+      <IDSymbol name="ToolbarGroup4" value="0x0440" />
+
+      <IDSymbol name="cmdidDeploy" value="0x0100" />
+      <IDSymbol name="cmdidUndeploy" value="0x0102" />
+      <IDSymbol name="cmdidQuickDeploy" value="0x0104" />
+      <IDSymbol name="cmdidBuildMsi" value="0x0106" />
+      <IDSymbol name="cmdidDeployRules" value="0x0108" />
+      <IDSymbol name="cmdidUndeployRules" value="0x0110" />
+      <IDSymbol name="cmdidBounce" value="0x0112" />
+      <IDSymbol name="cmdidTerminateInstances" value="0x0114" />
+      <IDSymbol name="cmdidExportSettings" value="0x0116" />
+      <IDSymbol name="cmdidGacProjectOutput" value="0x0118" />
+      <IDSymbol name="cmdidImportBindings" value="0x0120" />
+      <IDSymbol name="cmdidPreprocessBindings" value="0x0122" />
+      <IDSymbol name="cmdidUpdateSso" value="0x0124" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidImages" value="{71c93be8-e482-46a1-a7a1-3b4edc9cde20}">
+      <IDSymbol name="bmpQuickDeploy" value="1" />
+      <IDSymbol name="bmpDeploy" value="2" />
+      <IDSymbol name="bmpUndeploy" value="3" />
+      <IDSymbol name="bmpBounce" value="4" />
+      <IDSymbol name="bmpBuildMsi" value="5" />
+      <IDSymbol name="bmpUpdateSso" value="6" />
+      <IDSymbol name="bmpTerminateInstances" value="7" />
+      <IDSymbol name="bmpGacProjectOutput" value="8" />
+      <IDSymbol name="bmpExportSettings" value="9" />
+      <IDSymbol name="bmpImportBindings" value="10" />
+      <IDSymbol name="bmpPreprocessBindings" value="11" />
+      <!--<IDSymbol name="bmpDecodeBindings" value="12" />-->
+      <IDSymbol name="bmpDeployRules" value="13" />
+      <IDSymbol name="bmpUndeployRules" value="14" />
+    </GuidSymbol>
+  </Symbols>
+
+  <CommandPlacements>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidQuickDeploy" priority="0x0100">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup1" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidDeploy" priority="0x0110">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup1" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidUndeploy" priority="0x0120">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup1" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidBuildMsi" priority="0x0130">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup1" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidDeployRules" priority="0x0140">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup2" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidUndeployRules" priority="0x0150">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup2" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidBounce" priority="0x0160">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup3" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidTerminateInstances" priority="0x0170">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup3" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidExportSettings" priority="0x0180">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup4" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidUpdateSso" priority="0x0190">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup4" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidGacProjectOutput" priority="0x0200">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup4" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidImportBindings" priority="0x0210">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup4" />
+    </CommandPlacement>
+    <CommandPlacement guid="guidAddinCmdSet" id="cmdidPreprocessBindings" priority="0x0220">
+      <Parent guid="guidAddinCmdSet" id="ToolbarGroup4" />
+    </CommandPlacement>
+  </CommandPlacements>
+
+  <VisibilityConstraints>
+    <VisibilityItem guid="guidAddinCmdSet" id="Toolbar" context="UICONTEXT_SolutionHasSingleProject" />
+    <VisibilityItem guid="guidAddinCmdSet" id="Toolbar" context="UICONTEXT_SolutionHasMultipleProjects" />
+  </VisibilityConstraints>
+</CommandTable>

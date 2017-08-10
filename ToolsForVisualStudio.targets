@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Deployment Framework for BizTalk Tools for Visual Studio
+  Copyright (C) 2008-Present Thomas F. Abraham. All Rights Reserved.
+  Licensed under the MIT License. See License.txt in the project root.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="Build">
+  <PropertyGroup>
+    <VsixVersion>1.97.0.0</VsixVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BuildDependsOn>
+      UpdateCommonAssemblyInfo;
+      BuildAddinPackage;
+      BuildAddin;
+      RevertCommonAssemblyInfo;
+      CopyAddin
+    </BuildDependsOn>
+  </PropertyGroup>
+
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
+
+  <Target Name="UpdateCommonAssemblyInfo">
+    <ReplaceAssemblyVersionInFile Path="src\CommonAssemblyInfo.cs" NewVersion="$(VsixVersion)" />
+  </Target>
+
+  <Target Name="RevertCommonAssemblyInfo">
+    <ReplaceAssemblyVersionInFile Path="src\CommonAssemblyInfo.cs" NewVersion="1.0.0.0" />
+  </Target>
+
+  <Target Name="BuildAddinPackage">
+    <Exec Command="attrib -r src\Addin.ProjectTemplate\DFBT.vstemplate" />
+    <Exec Command="attrib -r src\Addin\ProjectTemplates\DFBTProject.zip" />
+    <WriteXmlValue XmlFilename="src\Addin.ProjectTemplate\DFBT.vstemplate" XPath="//ns:Assembly" Namespace="http://schemas.microsoft.com/developer/vstemplate/2005" Value="DeploymentFxForBizTalkAddin.ProjectWizard, Version=$(VsixVersion), Culture=neutral, PublicKeyToken=e748234cd372cc72" />
+    <Delete Files="src\Addin\ProjectTemplates\DFBTProject.zip" />
+    <Delete Files="src\Addin\bin\Release\ProjectTemplates\DFBTProject.zip" />
+    <Exec Command="Tools\7za a -r -tzip src\Addin\ProjectTemplates\DFBTProject.zip src\Addin.ProjectTemplate\*" />
+  </Target>
+
+  <Target Name="BuildAddin">
+    <Exec Command="attrib -r src\Addin.VS2010\source.extension.vsixmanifest" />
+    <Exec Command="attrib -r src\Addin.VS2012\source.extension.vsixmanifest" />
+    <Exec Command="attrib -r src\Addin.VS2013\source.extension.vsixmanifest" />
+    <Exec Command="attrib -r src\Addin.VS2015\source.extension.vsixmanifest" />
+
+    <WriteXmlValue XmlFilename="src\Addin.VS2010\source.extension.vsixmanifest" XPath="//ns:Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2010" Value="$(VsixVersion)" />
+    <WriteXmlValue XmlFilename="src\Addin.VS2012\source.extension.vsixmanifest" XPath="//ns:Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2010" Value="$(VsixVersion)" />
+    <WriteXmlValue XmlFilename="src\Addin.VS2013\source.extension.vsixmanifest" XPath="//ns:Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2010" Value="$(VsixVersion)" />
+    <WriteXmlValue XmlFilename="src\Addin.VS2015\source.extension.vsixmanifest" XPath="//ns:Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2010" Value="$(VsixVersion)" />
+
+    <MSBuild Projects="src\DeploymentFrameworkForBizTalkAddin.sln" Properties="Configuration=Release;Platform=Any CPU" Targets="Rebuild" />
+  </Target>
+
+  <Target Name="CopyAddin">
+    <ItemGroup>
+      <VsixFile Include="src\AddIn.VS2010\bin\release\DeploymentFrameworkForBizTalkToolsForVS2010.vsix" />
+      <VsixFile Include="src\AddIn.VS2012\bin\release\DeploymentFrameworkForBizTalkToolsForVS2012.vsix" />
+      <VsixFile Include="src\AddIn.VS2013\bin\release\DeploymentFrameworkForBizTalkToolsForVS2013.vsix" />
+      <VsixFile Include="src\AddIn.VS2015\bin\release\DeploymentFrameworkForBizTalkToolsForVS2015.vsix" />
+    </ItemGroup>
+
+    <RemoveDir Directories="VSIX" />
+    <MakeDir Directories="VSIX" />
+    <Copy SourceFiles="@(VsixFile)" DestinationFolder="VSIX" />
+  </Target>
+
+  <UsingTask TaskName="ReplaceAssemblyVersionInFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <ParameterGroup>
+      <Path ParameterType="System.String" Required="true" />
+      <NewVersion ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        System.IO.File.SetAttributes(Path, System.IO.FileAttributes.Normal);
+        string contents = System.IO.File.ReadAllText(Path);
+        contents = System.Text.RegularExpressions.Regex.Replace(contents, @"\d+\.\d+\.\d+\.\d+", NewVersion);
+        System.IO.File.WriteAllText(Path, contents);
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="WriteXmlValue" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <ParameterGroup>
+      <XmlFilename ParameterType="System.String" Required="true" />
+      <XPath ParameterType="System.String" Required="true" />
+      <Value ParameterType="System.String" Required="true" />
+      <Namespace ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Xml" />
+      <Using Namespace="System.Xml"/>
+      <Code Type="Fragment" Language="cs">
+        Log.LogMessage(MessageImportance.Normal, "Updating '" + XPath + "' value(s) in XML file '" + XmlFilename + "'...");
+
+        try
+        {
+          XmlDocument doc = new XmlDocument();
+          doc.PreserveWhitespace = true;
+          doc.Load(XmlFilename);
+
+          XmlNodeList elements = null;
+
+          if (!string.IsNullOrEmpty(Namespace))
+          {
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            nsmgr.AddNamespace("ns", Namespace);
+            elements = doc.SelectNodes(XPath, nsmgr);
+          }
+          else
+          {
+            elements = doc.SelectNodes(XPath);
+          }
+
+          int count = elements.Count;
+
+          if (count > 0)
+          {
+            foreach (XmlElement elem in elements)
+            {
+              elem.InnerText = Value;
+            }
+
+            doc.Save(XmlFilename);
+            Log.LogMessage(MessageImportance.Normal, "Updated " + count.ToString() + " values in '" + XmlFilename + "'.");
+          }
+          else
+          {
+            Log.LogMessage(MessageImportance.Normal, "No XPath match(es) in file '" + XmlFilename + "'.");
+          }
+        }
+        catch (Exception ex)
+        {
+          Log.LogErrorFromException(ex, false, false, XmlFilename);
+        }
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>

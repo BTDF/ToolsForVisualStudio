@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="DeploymentFrameworkForBizTalk.ToolsForVS2015" Version="1.97.0.0" Language="en-US" Publisher="Deployment Framework for BizTalk Team" />
+    <DisplayName>Deployment Framework for BizTalk Tools for VS 2015</DisplayName>
+    <Description xml:space="preserve">Visual Studio Tools for the Deployment Framework for BizTalk - a powerful framework that eliminates the pain associated with BizTalk application deployments, and goes far beyond BizTalk’s out-of-the-box deployment functionality.</Description>
+    <MoreInfo>http://biztalkdeployment.codeplex.com</MoreInfo>
+    <License>LICENSE.txt</License>
+    <Tags>BTDF, BizTalk, Deployment Framework for BizTalk</Tags>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[14.0]" />
+    <InstallationTarget Version="[14.0]" Id="Microsoft.VisualStudio.Community" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[14.0]" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="DeploymentFrameworkForBizTalkAddin" Path="|DeploymentFrameworkForBizTalkAddin;PkgdefProjectOutputGroup|" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="DeploymentFrameworkForBizTalkAddin.ProjectWizard" Path="|DeploymentFrameworkForBizTalkAddin.ProjectWizard|" AssemblyName="|DeploymentFrameworkForBizTalkAddin.ProjectWizard;AssemblyName|" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="File" Path="ProjectTemplates" d:TargetPath="ProjectTemplates\DFBTProject.zip" />
+  </Assets>
+</PackageManifest>
