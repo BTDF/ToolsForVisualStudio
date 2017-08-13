@@ -47,13 +47,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\AddIn\ProjectTemplates\DFBTProject.zip">
-      <Link>ProjectTemplates\DFBTProject.zip</Link>
+    <Content Include="ProjectTemplates\DFBTProject.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="..\LICENSE.txt">
+    <Content Include="..\..\LICENSE.txt">
       <Link>LICENSE.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="BTDFTVS2010Logo.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="source.extension.vsixmanifest">

@@ -31,11 +31,10 @@
 
   <Target Name="BuildAddinPackage">
     <Exec Command="attrib -r src\Addin.ProjectTemplate\DFBT.vstemplate" />
-    <Exec Command="attrib -r src\Addin\ProjectTemplates\DFBTProject.zip" />
     <WriteXmlValue XmlFilename="src\Addin.ProjectTemplate\DFBT.vstemplate" XPath="//ns:Assembly" Namespace="http://schemas.microsoft.com/developer/vstemplate/2005" Value="DeploymentFxForBizTalkAddin.ProjectWizard, Version=$(VsixVersion), Culture=neutral, PublicKeyToken=e748234cd372cc72" />
     <Delete Files="src\Addin\ProjectTemplates\DFBTProject.zip" />
     <Delete Files="src\Addin\bin\Release\ProjectTemplates\DFBTProject.zip" />
-    <Exec Command="Tools\7za a -r -tzip src\Addin\ProjectTemplates\DFBTProject.zip src\Addin.ProjectTemplate\*" />
+    <Exec Command="..\..\Tools\7za a -tzip ..\Addin\ProjectTemplates\DFBTProject.zip *" WorkingDirectory="src\Addin.ProjectTemplate" />
   </Target>
 
   <Target Name="BuildAddin">
