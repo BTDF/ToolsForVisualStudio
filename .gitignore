@@ -289,3 +289,7 @@ __pycache__/
 
 # Deployment Framework for BizTalk
 VSIX/
+src/AddIn.VS2010/ProjectTemplates/DFBTProject.zip
+src/AddIn.VS2013/ProjectTemplates/DFBTProject.zip
+src/AddIn.VS2012/ProjectTemplates/DFBTProject.zip
+src/AddIn.VS2015/ProjectTemplates/DFBTProject.zip
