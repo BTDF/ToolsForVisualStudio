@@ -14,7 +14,7 @@
   <TemplateContent>
   </TemplateContent>
   <WizardExtension>
-    <Assembly>DeploymentFxForBizTalkAddin.ProjectWizard, Version=1.97.0.0, Culture=neutral, PublicKeyToken=e748234cd372cc72</Assembly>
+    <Assembly>DeploymentFxForBizTalkAddin.ProjectWizard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e748234cd372cc72</Assembly>
     <FullClassName>DeploymentFramework.VisualStudioAddIn.ProjectWizard.AddProjectWizard</FullClassName>
   </WizardExtension>
 </VSTemplate>

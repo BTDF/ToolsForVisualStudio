@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="DeploymentFrameworkForBizTalk.ToolsForVS2012" Version="1.97.0.0" Language="en-US" Publisher="Deployment Framework for BizTalk Team" />
     <DisplayName>Deployment Framework for BizTalk Tools for VS 2012</DisplayName>
     <Description xml:space="preserve">Visual Studio Tools for the Deployment Framework for BizTalk - a powerful framework that eliminates the pain associated with BizTalk application deployments, and goes far beyond BizTalk’s out-of-the-box deployment functionality.</Description>
     <MoreInfo>http://biztalkdeployment.codeplex.com</MoreInfo>

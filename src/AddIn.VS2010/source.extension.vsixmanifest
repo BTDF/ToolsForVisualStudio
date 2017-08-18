@@ -3,7 +3,6 @@
   <Identifier Id="DeploymentFrameworkForBizTalk.ToolsForVS2010">
     <Name>Deployment Framework for BizTalk Tools for VS 2010</Name>
     <Author>Deployment Framework for BizTalk Team</Author>
-    <Version>1.97.0.0</Version>
     <Description xml:space="preserve">Visual Studio Tools for the Deployment Framework for BizTalk - a powerful framework that eliminates the pain associated with BizTalk application deployments, and goes far beyond BizTalk’s out-of-the-box deployment functionality.</Description>
     <Locale>1033</Locale>
     <MoreInfoUrl>http://biztalkdeployment.codeplex.com</MoreInfoUrl>

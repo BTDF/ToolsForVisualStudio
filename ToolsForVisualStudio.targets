@@ -6,7 +6,6 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="Build">
   <PropertyGroup>
-    <VsixVersion>1.97.0.0</VsixVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -44,9 +43,9 @@
     <Exec Command="attrib -r src\Addin.VS2015\source.extension.vsixmanifest" />
 
     <WriteXmlValue XmlFilename="src\Addin.VS2010\source.extension.vsixmanifest" XPath="//ns:Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2010" Value="$(VsixVersion)" />
-    <WriteXmlValue XmlFilename="src\Addin.VS2012\source.extension.vsixmanifest" XPath="//ns:Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2010" Value="$(VsixVersion)" />
-    <WriteXmlValue XmlFilename="src\Addin.VS2013\source.extension.vsixmanifest" XPath="//ns:Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2010" Value="$(VsixVersion)" />
-    <WriteXmlValue XmlFilename="src\Addin.VS2015\source.extension.vsixmanifest" XPath="//ns:Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2010" Value="$(VsixVersion)" />
+    <WriteXmlValue XmlFilename="src\Addin.VS2012\source.extension.vsixmanifest" XPath="//ns:Metadata/ns:Identity/@Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" Value="$(VsixVersion)" />
+    <WriteXmlValue XmlFilename="src\Addin.VS2013\source.extension.vsixmanifest" XPath="//ns:Metadata/ns:Identity/@Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" Value="$(VsixVersion)" />
+    <WriteXmlValue XmlFilename="src\Addin.VS2015\source.extension.vsixmanifest" XPath="//ns:Metadata/ns:Identity/@Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" Value="$(VsixVersion)" />
 
     <MSBuild Projects="src\DeploymentFrameworkForBizTalkAddin.sln" Properties="Configuration=Release;Platform=Any CPU" Targets="Rebuild" />
   </Target>
@@ -115,9 +114,16 @@
 
           if (count > 0)
           {
-            foreach (XmlElement elem in elements)
+            foreach (XmlNode elem in elements)
             {
-              elem.InnerText = Value;
+			    if (elem.GetType() == typeof(XmlElement))
+				{
+                  ((XmlElement)elem).InnerText = Value;
+				}
+				else
+				{
+				  ((XmlAttribute)elem).Value = Value;
+				}
             }
 
             doc.Save(XmlFilename);
