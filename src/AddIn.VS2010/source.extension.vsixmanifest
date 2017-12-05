@@ -3,9 +3,10 @@
   <Identifier Id="DeploymentFrameworkForBizTalk.ToolsForVS2010">
     <Name>Deployment Framework for BizTalk Tools for VS 2010</Name>
     <Author>Deployment Framework for BizTalk Team</Author>
+    <Version>2.0.1.0</Version>
     <Description xml:space="preserve">Visual Studio Tools for the Deployment Framework for BizTalk - a powerful framework that eliminates the pain associated with BizTalk application deployments, and goes far beyond BizTalk’s out-of-the-box deployment functionality.</Description>
     <Locale>1033</Locale>
-    <MoreInfoUrl>http://biztalkdeployment.codeplex.com</MoreInfoUrl>
+    <MoreInfoUrl>https://github.com/BTDF/ToolsForVisualStudio</MoreInfoUrl>
     <Icon>BTDFTVS2010Logo.png</Icon>
     <PreviewImage>BTDFTVS2010Logo.png</PreviewImage>
     <License>License.txt</License>

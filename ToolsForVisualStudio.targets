@@ -6,6 +6,7 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="Build">
   <PropertyGroup>
+   <VsixVersion>2.0.1.0</VsixVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,7 +30,6 @@
   </Target>
 
   <Target Name="BuildAddinPackage">
-    <Exec Command="attrib -r src\Addin.ProjectTemplate\DFBT.vstemplate" />
     <WriteXmlValue XmlFilename="src\Addin.ProjectTemplate\DFBT.vstemplate" XPath="//ns:Assembly" Namespace="http://schemas.microsoft.com/developer/vstemplate/2005" Value="DeploymentFxForBizTalkAddin.ProjectWizard, Version=$(VsixVersion), Culture=neutral, PublicKeyToken=e748234cd372cc72" />
     <Delete Files="src\Addin\ProjectTemplates\DFBTProject.zip" />
     <Delete Files="src\Addin\bin\Release\ProjectTemplates\DFBTProject.zip" />
@@ -37,11 +37,6 @@
   </Target>
 
   <Target Name="BuildAddin">
-    <Exec Command="attrib -r src\Addin.VS2010\source.extension.vsixmanifest" />
-    <Exec Command="attrib -r src\Addin.VS2012\source.extension.vsixmanifest" />
-    <Exec Command="attrib -r src\Addin.VS2013\source.extension.vsixmanifest" />
-    <Exec Command="attrib -r src\Addin.VS2015\source.extension.vsixmanifest" />
-
     <WriteXmlValue XmlFilename="src\Addin.VS2010\source.extension.vsixmanifest" XPath="//ns:Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2010" Value="$(VsixVersion)" />
     <WriteXmlValue XmlFilename="src\Addin.VS2012\source.extension.vsixmanifest" XPath="//ns:Metadata/ns:Identity/@Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" Value="$(VsixVersion)" />
     <WriteXmlValue XmlFilename="src\Addin.VS2013\source.extension.vsixmanifest" XPath="//ns:Metadata/ns:Identity/@Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" Value="$(VsixVersion)" />
