@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2010
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTalkAddin", "Addin\DeploymentFrameworkForBizTalkAddin.csproj", "{E292D979-8AAF-4DFF-BBA1-273ECBDC2BA5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTalkAddin.ProjectWizard", "AddIn.ProjectWizard\DeploymentFrameworkForBizTalkAddin.ProjectWizard.csproj", "{28B24CC9-42D8-46AA-B19D-1CD3D1A376B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTalkAddin.ProjectWizard.Test", "AddIn.ProjectWizard.Test\DeploymentFrameworkForBizTalkAddin.ProjectWizard.Test.csproj", "{3B7DD033-BE61-4C6D-99FD-1A6F4EBDEF53}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTalkAddin.VS2010", "AddIn.VS2010\DeploymentFrameworkForBizTalkAddin.VS2010.csproj", "{EEBD03C1-339A-47C6-8256-99F6E358A015}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTalkAddin.VS2012", "AddIn.VS2012\DeploymentFrameworkForBizTalkAddin.VS2012.csproj", "{975E6E47-2A6B-49A2-9AA0-2A98296C4500}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTalkAddin.VS2013", "AddIn.VS2013\DeploymentFrameworkForBizTalkAddin.VS2013.csproj", "{24711ECC-AC97-471E-A371-2BC15E94E4E2}"
 EndProject
@@ -38,14 +36,6 @@ Global
 		{3B7DD033-BE61-4C6D-99FD-1A6F4EBDEF53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B7DD033-BE61-4C6D-99FD-1A6F4EBDEF53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B7DD033-BE61-4C6D-99FD-1A6F4EBDEF53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EEBD03C1-339A-47C6-8256-99F6E358A015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEBD03C1-339A-47C6-8256-99F6E358A015}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEBD03C1-339A-47C6-8256-99F6E358A015}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEBD03C1-339A-47C6-8256-99F6E358A015}.Release|Any CPU.Build.0 = Release|Any CPU
-		{975E6E47-2A6B-49A2-9AA0-2A98296C4500}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{975E6E47-2A6B-49A2-9AA0-2A98296C4500}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{975E6E47-2A6B-49A2-9AA0-2A98296C4500}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{975E6E47-2A6B-49A2-9AA0-2A98296C4500}.Release|Any CPU.Build.0 = Release|Any CPU
 		{24711ECC-AC97-471E-A371-2BC15E94E4E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{24711ECC-AC97-471E-A371-2BC15E94E4E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24711ECC-AC97-471E-A371-2BC15E94E4E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
