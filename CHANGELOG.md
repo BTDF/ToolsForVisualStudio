@@ -1,4 +1,9 @@
+### 2.1.0 [Release] (1/18/2026)
+
+* Remove support for BizTalk 2010, 2013 R1 and R2 (#3)
+
 ### 2.0.1 [Release] (12/4/2017)
+
 * Fix the declaration of the .NET Framework dependency for VS 2012+ to allow .NET 4.5 or newer (#1)
 * Reintroduce missing XML elements in VSIX manifests
 
