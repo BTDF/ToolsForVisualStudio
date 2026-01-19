@@ -1,7 +1,6 @@
-### 2.1.0 [Release] (2/?/2021)
+### 2.1.0 [Release] (1/18/2026)
 
-* Add support for BizTalk 2020 (VS 2019)
-* Remove support for BizTalk 2010 and 2013 (R1)
+* Remove support for BizTalk 2010, 2013 R1 and R2 (#3)
 
 ### 2.0.1 [Release] (12/4/2017)
 
