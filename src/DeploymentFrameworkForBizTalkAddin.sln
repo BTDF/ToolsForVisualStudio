@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTalkAddin.ProjectWizard.Test", "AddIn.ProjectWizard.Test\DeploymentFrameworkForBizTalkAddin.ProjectWizard.Test.csproj", "{3B7DD033-BE61-4C6D-99FD-1A6F4EBDEF53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTalkAddin.VS2015", "AddIn.VS2015\DeploymentFrameworkForBizTalkAddin.VS2015.csproj", "{95E4F473-D363-4CF5-9448-94D3D73A5F6C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentFrameworkForBizTalkAddin.VS2019", "AddIn.VS2019\DeploymentFrameworkForBizTalkAddin.VS2019.csproj", "{28B899C3-C2BB-49FC-907D-E3AEEDB2AC8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +34,10 @@ Global
 		{3B7DD033-BE61-4C6D-99FD-1A6F4EBDEF53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B7DD033-BE61-4C6D-99FD-1A6F4EBDEF53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B7DD033-BE61-4C6D-99FD-1A6F4EBDEF53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{95E4F473-D363-4CF5-9448-94D3D73A5F6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{95E4F473-D363-4CF5-9448-94D3D73A5F6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{95E4F473-D363-4CF5-9448-94D3D73A5F6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{95E4F473-D363-4CF5-9448-94D3D73A5F6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28B899C3-C2BB-49FC-907D-E3AEEDB2AC8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28B899C3-C2BB-49FC-907D-E3AEEDB2AC8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28B899C3-C2BB-49FC-907D-E3AEEDB2AC8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28B899C3-C2BB-49FC-907D-E3AEEDB2AC8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

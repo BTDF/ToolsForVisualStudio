@@ -2,12 +2,9 @@
 // Copyright (C) 2008-Present Thomas F. Abraham. All Rights Reserved.
 // Licensed under the MIT License. See License.txt in the project root.
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.Shell;
+using System;
+using System.ComponentModel.Design;
 
 namespace DeploymentFrameworkForBizTalk.Addin.Implementation
 {

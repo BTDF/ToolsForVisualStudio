@@ -2,18 +2,18 @@
 // Copyright (C) 2008-Present Thomas F. Abraham. All Rights Reserved.
 // Licensed under the MIT License. See License.txt in the project root.
 
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.TemplateWizard;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.TemplateWizard;
-using Microsoft.Win32;
-using System.Reflection;
-using System.ComponentModel;
 
 namespace DeploymentFramework.VisualStudioAddIn.ProjectWizard
 {
@@ -39,103 +39,107 @@ namespace DeploymentFramework.VisualStudioAddIn.ProjectWizard
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
-            DTE2 dte = automationObject as DTE2;
+            ThreadHelper.JoinableTaskFactory.Run(async delegate {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            if (dte == null)
-            {
-                MessageBox.Show(
-                    "Cannot convert automation object to DTE2.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+                DTE2 dte = automationObject as DTE2;
 
-            if (!dte.Solution.IsOpen)
-            {
+                if (dte == null)
+                {
+                    MessageBox.Show(
+                        "Cannot convert automation object to DTE2.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (!dte.Solution.IsOpen)
+                {
+                    MessageBox.Show(
+                        "Please open your BizTalk solution, then use the Add New Project dialog on the solution to add this project.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
+                string destinationPath = replacementsDictionary["$destinationdirectory$"];
+
+                if (string.IsNullOrEmpty(destinationPath))
+                {
+                    MessageBox.Show(
+                        "Cannot determine destination directory ($destinationdirectory$ is missing).",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
+                string btdfInstallDir =
+                    (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\Software\DeploymentFrameworkForBizTalk", "InstallPath", null);
+
+                if (string.IsNullOrEmpty(btdfInstallDir))
+                {
+                    MessageBox.Show(
+                        "Cannot find Deployment Framework registry key. Please install the Deployment Framework for BizTalk MSI.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                DeploymentOptions options = new DeploymentOptions();
+
+                OptionsForm optionsFrm = new OptionsForm(options);
+                if (optionsFrm.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                string templateDir = Path.Combine(btdfInstallDir, @"Developer\ProjectTemplate");
+
+                string[] templateFiles = Directory.GetFiles(templateDir, "*.*", SearchOption.AllDirectories);
+
+                try
+                {
+                    CopyDirectory(templateDir, destinationPath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        "Failed to copy Deployment Framework template files to destination folder: " + ex.Message,
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
+                string solutionName = Path.GetFileNameWithoutExtension(dte.Solution.FileName);
+                string projectFileName = "Deployment.btdfproj";
+                string projectFilePath = Path.Combine(destinationPath, projectFileName);
+
+                Dictionary<string, string> replacements = new Dictionary<string, string>();
+                replacements.Add("[PROJECTNAME]", solutionName);
+
+                ReplaceInTextFile(destinationPath, "InstallWizard.xml", replacements, Encoding.UTF8);
+                ReplaceInTextFile(destinationPath, "UnInstallWizard.xml", replacements, Encoding.UTF8);
+
+                replacements.Add("[GUID1]", Guid.NewGuid().ToString());
+                replacements.Add("[GUID2]", Guid.NewGuid().ToString());
+                ReplaceInTextFile(destinationPath, projectFileName, replacements, Encoding.UTF8);
+
+                UpdateProjectFile(projectFilePath, options, optionsFrm.WritePropertiesOnlyWhenNonDefault);
+
+                try
+                {
+                    dte.ExecuteCommand("File.OpenFile", '"' + projectFilePath + '"');
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Failed to open .btdfproj file in editor.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
                 MessageBox.Show(
-                    "Please open your BizTalk solution, then use the Add New Project dialog on the solution to add this project.",
-                    "Error",
+                    "A default Deployment Framework for BizTalk project has been configured in " + destinationPath + ". You must edit " + projectFileName + " to configure your specific deployment requirements.",
+                    "Project Created",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return;
-            }
-
-            string destinationPath = replacementsDictionary["$destinationdirectory$"];
-
-            if (string.IsNullOrEmpty(destinationPath))
-            {
-                MessageBox.Show(
-                    "Cannot determine destination directory ($destinationdirectory$ is missing).",
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return;
-            }
-
-            string btdfInstallDir =
-                (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\Software\DeploymentFrameworkForBizTalk", "InstallPath", null);
-
-            if (string.IsNullOrEmpty(btdfInstallDir))
-            {
-                MessageBox.Show(
-                    "Cannot find Deployment Framework registry key.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            DeploymentOptions options = new DeploymentOptions();
-
-            OptionsForm optionsFrm = new OptionsForm(options);
-            if (optionsFrm.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            string templateDir = Path.Combine(btdfInstallDir, @"Developer\ProjectTemplate");
-
-            string[] templateFiles = Directory.GetFiles(templateDir, "*.*", SearchOption.AllDirectories);
-
-            try
-            {
-                CopyDirectory(templateDir, destinationPath);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Failed to copy Deployment Framework template files to destination folder: " + ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return;
-            }
-
-            string solutionName = Path.GetFileNameWithoutExtension(dte.Solution.FileName);
-            string projectFileName = "Deployment.btdfproj";
-            string projectFilePath = Path.Combine(destinationPath, projectFileName);
-
-            Dictionary<string, string> replacements = new Dictionary<string, string>();
-            replacements.Add("[PROJECTNAME]", solutionName);
-
-            ReplaceInTextFile(destinationPath, "InstallWizard.xml", replacements, Encoding.UTF8);
-            ReplaceInTextFile(destinationPath, "UnInstallWizard.xml", replacements, Encoding.UTF8);
-
-            replacements.Add("[GUID1]", Guid.NewGuid().ToString());
-            replacements.Add("[GUID2]", Guid.NewGuid().ToString());
-            ReplaceInTextFile(destinationPath, projectFileName, replacements, Encoding.UTF8);
-
-            UpdateProjectFile(projectFilePath, options, optionsFrm.WritePropertiesOnlyWhenNonDefault);
-
-            try
-            {
-                dte.ExecuteCommand("File.OpenFile", '"' + projectFilePath + '"');
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Failed to open .btdfproj file in editor.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);                
-            }
-
-            MessageBox.Show(
-                "A default Deployment Framework for BizTalk project has been configured in " + destinationPath + ". You must edit " + projectFileName + " to configure your specific deployment requirements.",
-                "Project Created",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+                    MessageBoxIcon.Information);
+            });
         }
 
         public bool ShouldAddProjectItem(string filePath)

@@ -2,14 +2,13 @@
 // Copyright (C) 2008-Present Thomas F. Abraham. All Rights Reserved.
 // Licensed under the MIT License. See License.txt in the project root.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace DeploymentFrameworkForBizTalk.Addin.Implementation
 {
@@ -21,6 +20,7 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
 
         private DTE2 _applicationObject;
         private IVsOutputWindow _vsOutputWindow;
+        private OutputWindowPane _owP;
 
         private delegate void RunHandler(string exePath, string arguments);
 
@@ -32,41 +32,28 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
 
         internal void ExecuteBuild(string exePath, string arguments)
         {
-            if (SetBusy() == 1)
+            if (Interlocked.CompareExchange(ref IsBusy, 1, 0) == 1)
             {
                 return;
             }
 
-            OutputWindow ow = _applicationObject.ToolWindows.OutputWindow;
-            OutputWindowPane owP = GetOutputWindowPane();
-
-            owP.Clear();
-            owP.Activate();
-            ow.Parent.Activate();
-
-            RunHandler rh = new RunHandler(Run);
+            RunHandler rh = new RunHandler(RunProcess);
             AsyncCallback callback = new AsyncCallback(RunCallback);
             rh.BeginInvoke(exePath, arguments, callback, rh);
         }
 
-        internal void OnOpenSolution()
-        {
-            GetOutputWindowPane();
-        }
-
         internal void OnCloseSolution()
         {
-            RemoveOutputWindowPane();
-        }
+            OutputWindow ow = _applicationObject.ToolWindows.OutputWindow;
 
-        private int SetBusy()
-        {
-            return Interlocked.CompareExchange(ref IsBusy, 1, 0);
-        }
-
-        private void SetFree()
-        {
-            Interlocked.CompareExchange(ref IsBusy, 0, 1);
+            foreach (OutputWindowPane owp in ow.OutputWindowPanes)
+            {
+                if (string.Compare(owp.Name, ToolWindowName, true) == 0)
+                {
+                    _vsOutputWindow.DeletePane(Guid.Parse(owp.Guid));
+                    return;
+                }
+            }
         }
 
         private void RunCallback(IAsyncResult result)
@@ -83,32 +70,35 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
             }
             finally
             {
-                SetFree();
+                Interlocked.CompareExchange(ref IsBusy, 0, 1);
             }
         }
 
-        private void proc_OutputDataReceived(object sender, System.Diagnostics.DataReceivedEventArgs e)
+        private void OutputDataReceived(object sender, System.Diagnostics.DataReceivedEventArgs e)
         {
-            WriteToOutputWindow(e.Data);
-        }
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-        private void WriteToOutputWindow(string message)
-        {
-            OutputWindowPane owP = GetOutputWindowPane();
-            owP.OutputString(message);
-            owP.OutputString("\r\n");
-        }
-
-        private void Run(string exePath, string arguments)
-        {
-            RunProcess(exePath, arguments);
+                _owP.OutputString(e.Data + "\r\n");
+            });
         }
 
         private void RunProcess(string exePath, string arguments)
         {
-            WriteToOutputWindow("Starting build...");
-            WriteToOutputWindow(exePath + " " + arguments);
-            WriteToOutputWindow(string.Empty);
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                _owP = GetOutputWindowPane();
+                _owP.Clear();
+                _owP.Activate();
+                _applicationObject.ToolWindows.OutputWindow.Parent.Activate();
+
+                _owP.OutputString("Starting build...\r\n");
+                _owP.OutputString(exePath + " " + arguments + "\r\n");
+                _owP.OutputString(string.Empty);
+            });
 
             using (System.Diagnostics.Process proc = new System.Diagnostics.Process())
             {
@@ -118,12 +108,14 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
                 proc.StartInfo.CreateNoWindow = true;
                 proc.StartInfo.RedirectStandardOutput = true;
 
-                proc.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler(proc_OutputDataReceived);
+                proc.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler(OutputDataReceived);
                 proc.Start();
 
                 proc.BeginOutputReadLine();
                 proc.WaitForExit();
             }
+
+            _owP = null;
         }
 
         private OutputWindowPane GetOutputWindowPane()
@@ -139,20 +131,6 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
             }
 
             return ow.OutputWindowPanes.Add(ToolWindowName);
-        }
-
-        private void RemoveOutputWindowPane()
-        {
-            OutputWindow ow = _applicationObject.ToolWindows.OutputWindow;
-
-            foreach (OutputWindowPane owp in ow.OutputWindowPanes)
-            {
-                if (string.Compare(owp.Name, ToolWindowName, true) == 0)
-                {
-                    _vsOutputWindow.DeletePane(Guid.Parse(owp.Guid));
-                    return;
-                }
-            }
         }
     }
 }
