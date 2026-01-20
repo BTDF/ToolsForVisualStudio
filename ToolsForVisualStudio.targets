@@ -4,9 +4,9 @@
   Copyright (C) 2008-Present Thomas F. Abraham. All Rights Reserved.
   Licensed under the MIT License. See License.txt in the project root.
 -->
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0" DefaultTargets="Build">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0" DefaultTargets="Build">
   <PropertyGroup>
-   <VsixVersion>2.1.0.0</VsixVersion>
+   <VsixVersion>2.2.0.0</VsixVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -37,14 +37,14 @@
   </Target>
 
   <Target Name="BuildAddin">
-    <WriteXmlValue XmlFilename="src\Addin.VS2015\source.extension.vsixmanifest" XPath="//ns:Metadata/ns:Identity/@Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" Value="$(VsixVersion)" />
+    <WriteXmlValue XmlFilename="src\Addin.VS2019\source.extension.vsixmanifest" XPath="//ns:Metadata/ns:Identity/@Version" Namespace="http://schemas.microsoft.com/developer/vsx-schema/2011" Value="$(VsixVersion)" />
 
     <MSBuild Projects="src\DeploymentFrameworkForBizTalkAddin.sln" Properties="Configuration=Release;Platform=Any CPU" Targets="Rebuild" />
   </Target>
 
   <Target Name="CopyAddin">
     <ItemGroup>
-      <VsixFile Include="src\AddIn.VS2015\bin\release\DeploymentFrameworkForBizTalkToolsForVS2015.vsix" />
+      <VsixFile Include="src\AddIn.VS2019\bin\release\DeploymentFrameworkForBizTalkToolsForVS2019.vsix" />
     </ItemGroup>
 
     <RemoveDir Directories="VSIX" />

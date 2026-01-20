@@ -2,20 +2,18 @@
 // Copyright (C) 2008-Present Thomas F. Abraham. All Rights Reserved.
 // Licensed under the MIT License. See License.txt in the project root.
 
+using DeploymentFrameworkForBizTalk.Addin.Implementation;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using DeploymentFrameworkForBizTalk.Addin.Implementation;
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
+using System.Threading;
 
 namespace DeploymentFrameworkForBizTalk.Addin
 {
@@ -27,14 +25,14 @@ namespace DeploymentFrameworkForBizTalk.Addin
     /// and its components with the shell.
     /// </summary>
     // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is a package.
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     // This attribute is used to register the informations needed to show the this package in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "5.x", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideAutoLoad("{f1536ef8-92ec-443c-9ed7-fdadf150da82}")]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(GuidList.guidAddinPkgString)]
-    public sealed class AddinPackage : Package
+    public sealed class AddinPackage : AsyncPackage
     {
         private CommandManager _cmdManager;
 
@@ -48,21 +46,22 @@ namespace DeploymentFrameworkForBizTalk.Addin
         }
 
         /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited, so this is the place
-        /// where you can put the initialization code that relies on services provided by Visual Studio.
+        /// Initialization of the package; this method is called right after the package is sited, so this is where to put initialization code that relies on services provided by Visual Studio
         /// </summary>
-        protected override void Initialize()
+        protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
-            base.Initialize();
 
-            DTE2 applicationObject = (DTE2)GetService(typeof(DTE));
-            IVsOutputWindow outputWindow = (IVsOutputWindow)GetService(typeof(SVsOutputWindow));
+            // Switches to the UI thread in order to consume some services used in command initialization
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+            DTE2 applicationObject = (DTE2) await GetServiceAsync(typeof(DTE));
+            IVsOutputWindow outputWindow = (IVsOutputWindow) await GetServiceAsync(typeof(SVsOutputWindow));
 
             _cmdManager = new CommandManager(new CommandRunner(applicationObject, outputWindow), applicationObject, this);
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            OleMenuCommandService mcs = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             if ( null != mcs )
             {
                 MenuCommandRegistrar registrar = new MenuCommandRegistrar(mcs, _cmdManager);

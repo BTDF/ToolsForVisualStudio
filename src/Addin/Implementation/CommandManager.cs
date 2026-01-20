@@ -2,14 +2,11 @@
 // Copyright (C) 2008-Present Thomas F. Abraham. All Rights Reserved.
 // Licensed under the MIT License. See License.txt in the project root.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using System;
 
 namespace DeploymentFrameworkForBizTalk.Addin.Implementation
 {
@@ -19,7 +16,6 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
         private DTE2 _applicationObject;
         private SolutionEvents _solutionEvents;
         private IServiceProvider _pkg;
-        private IVsUIShell _uiShell;
         private string _msbuildPath;
         private string _gacUtilPath;
 
@@ -32,10 +28,7 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
             _msbuildPath = Util.GetMsBuildPath();
             _gacUtilPath = Util.GetGacUtilPath();
 
-            _uiShell = (IVsUIShell)_pkg.GetService(typeof(SVsUIShell));
-
             _solutionEvents = ((Events2)application.Events).SolutionEvents;
-            //_solutionEvents.Opened += _solutionEvents_Opened;
             _solutionEvents.AfterClosing += _solutionEvents_AfterClosing;
         }
 
@@ -103,13 +96,20 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
         {
             Array projects = (Array)_applicationObject.ActiveSolutionProjects;
 
-            if (projects.Length > 0)
+            if (projects.Length == 0)
             {
-                if (projects.Length > 1)
-                {
-                    ShowMessageBox("Please select only one project.", OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGICON.OLEMSGICON_WARNING);
-                    return;
-                }
+                return;
+            }
+
+            if (projects.Length > 1)
+            {
+                ShowMessageBox("Please select only one project.", OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGICON.OLEMSGICON_WARNING);
+                return;
+            }
+
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
                 Project proj = projects.GetValue(0) as Project;
 
@@ -125,7 +125,7 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
 
                 string arguments = string.Format("/i \"{0}\" /f", System.IO.Path.GetFullPath(path.LocalPath));
                 _commandRunner.ExecuteBuild(_gacUtilPath, arguments);
-            }
+            });
         }
 
         internal void OnBeforeQueryStatus(object sender, EventArgs e)
@@ -139,16 +139,6 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
             }
         }
 
-        private string GetActiveSolutionConfiguration()
-        {
-            return _applicationObject.Solution.SolutionBuild.ActiveConfiguration.Name;
-        }
-
-        private string GetActiveSolutionFileName()
-        {
-            return _applicationObject.Solution.FileName;
-        }
-
         private void ExecuteMSBuildTarget(string targetName)
         {
             ExecuteMSBuildTarget(targetName, null);
@@ -156,45 +146,59 @@ namespace DeploymentFrameworkForBizTalk.Addin.Implementation
 
         private void ExecuteMSBuildTarget(string targetName, string addlProperties)
         {
-            string activeSolutionConfiguration = GetActiveSolutionConfiguration();
-            string solutionFilename = GetActiveSolutionFileName();
-            string projectPath = Util.GetDeploymentProjectPath(solutionFilename);
-            string arguments = string.Format("\"{0}\" /nologo /t:{1} /p:Configuration={2}", projectPath, targetName, activeSolutionConfiguration);
-
-            if (!string.IsNullOrWhiteSpace(addlProperties))
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                arguments += " /p:" + addlProperties;
-            }
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            _commandRunner.ExecuteBuild(_msbuildPath, arguments);
+                string activeSolutionConfiguration = _applicationObject.Solution.SolutionBuild.ActiveConfiguration.Name;
+                string solutionFilename = _applicationObject.Solution.FileName;
+                string projectPath = Util.GetDeploymentProjectPath(solutionFilename);
+                string arguments = string.Format("\"{0}\" /nologo /t:{1} /p:Configuration={2}", projectPath, targetName, activeSolutionConfiguration);
+
+                if (!string.IsNullOrWhiteSpace(addlProperties))
+                {
+                    arguments += " /p:" + addlProperties;
+                }
+
+                _commandRunner.ExecuteBuild(_msbuildPath, arguments);
+            });
         }
 
         private void ShowMessageBox(string msg, OLEMSGBUTTON buttonType, OLEMSGICON iconType)
         {
-            Guid clsid = Guid.Empty;
-            int result;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(
-                _uiShell.ShowMessageBox(
-                    0,
-                    ref clsid,
-                    "Deployment Framework for BizTalk",
-                    msg,
-                    string.Empty,
-                    0,
-                    buttonType,
-                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-                    iconType,
-                    0,        // false
-                    out result));
-        }
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-        //private void _solutionEvents_Opened()
-        //{
-        //}
+                Guid clsid = Guid.Empty;
+                int result;
+
+                IVsUIShell uiShell = (IVsUIShell)_pkg.GetService(typeof(SVsUIShell));
+
+                Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(
+                    uiShell.ShowMessageBox(
+                        0,
+                        ref clsid,
+                        "Deployment Framework for BizTalk",
+                        msg,
+                        string.Empty,
+                        0,
+                        buttonType,
+                        OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
+                        iconType,
+                        0,        // false
+                        out result));
+            });
+        }
 
         private void _solutionEvents_AfterClosing()
         {
-            _commandRunner.OnCloseSolution();
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                _commandRunner.OnCloseSolution();
+            });
         }
     }
 }
